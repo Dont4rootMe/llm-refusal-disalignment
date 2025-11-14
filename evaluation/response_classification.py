@@ -75,24 +75,7 @@ class ResponseClassificator:
 
         return messages
     
-    def _parse_labels(self, content: str, expected: int) -> List[str]:
-        labels = [line.strip().lower() for line in content.splitlines() if line.strip()]
-        if len(labels) != expected:
-            raise ValueError(
-                "Unexpected number of labels returned by the classification model: "
-                f"expected {expected}, got {len(labels)}. Raw content: {content!r}"
-            )
-
-        invalid = [label for label in labels if label not in {"refusal", "answer"}]
-        if invalid:
-            raise ValueError(
-                "Classification model returned invalid labels: "
-                f"{invalid}. Raw content: {content!r}"
-            )
-
-        return labels
     
-
     def classify(self, responses: Sequence[str]) -> List[str]:
         """Return a label for every response in *responses*."""
 
