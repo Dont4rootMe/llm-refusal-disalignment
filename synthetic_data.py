@@ -6,8 +6,6 @@ Provides:
  - utility functions: train/val split, reproducible seed control
  - implemented back-translation (rule-based, deterministic) and paraphrase expansion (deterministic)
 
-Notes:
- - This is intentionally self-contained and does not call external APIs or models.
  - Replace / extend the back-translation or paraphrase functions later when a neural paraphraser is available.
 """
 
