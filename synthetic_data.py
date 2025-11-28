@@ -422,8 +422,8 @@ class SyntheticDataGenerator:
                 out.append(candidate)
         return out
 
-    def generate_by_selection_map(self, selection_map: Dict[str, Union[List[int], int]],
-                                variant_frac: float = 0.3) -> Tuple[Dataset, Dataset]:
+    def generate_by_selection_map(self, selection_map: Dict[str, Union[List[int], int]]
+                                ) -> Tuple[Dataset, Dataset]:
         """
         Hydra-compatible dataset generator with flexible selection.
         Always returns torch Dataset objects containing harmful and safe prompts.
@@ -433,20 +433,16 @@ class SyntheticDataGenerator:
                 - 'toxic': List[int] OR int (number of random toxic words to sample)
                 - 'benign': List[int] OR int (number of random benign words to sample)
                 - 'templates': List[int] OR int (number of random templates to sample)
-            variant_frac: Proportion of templates that undergo light paraphrasing/variants
 
         Returns:
             (harmful_dataset, safe_dataset) - Two torch.utils.data.Dataset objects
-
-        Now treats harmful and safe prompts as independent Cartesian products
-        and samples n unique examples when integers are provided.
         """
         if not TORCH_AVAILABLE:
             raise RuntimeError("torch is required for Dataset return but not available in the environment")
 
         templates_input = selection_map.get('templates', list(range(len(self.template_pool))))
         if isinstance(templates_input, int):
-            n_templates = max(1, min(len(self.template_pool), templates_input))
+            n_templates = max(1, templates_input)
             template_indices = self._rand.sample(range(len(self.template_pool)), n_templates)
         elif isinstance(templates_input, list):
             template_indices = templates_input
@@ -455,7 +451,7 @@ class SyntheticDataGenerator:
 
         toxic_input = selection_map.get('toxic', list(range(len(self.toxic_words))))
         if isinstance(toxic_input, int):
-            n_toxic = max(1, min(len(TOXIC_WORDS), toxic_input))
+            n_toxic = max(1, toxic_input)
             all_toxic_combinations = [(w_idx, t_idx)
                                     for w_idx in range(len(self.toxic_words))
                                     for t_idx in template_indices]
@@ -470,7 +466,7 @@ class SyntheticDataGenerator:
 
         benign_input = selection_map.get('benign', list(range(len(self.benign_words))))
         if isinstance(benign_input, int):
-            n_benign = max(1, min(len(BENIGN_WORDS), benign_input))
+            n_benign = max(1, benign_input)
             all_benign_combinations = [(w_idx, t_idx)
                                     for w_idx in range(len(self.benign_words))
                                     for t_idx in template_indices]
@@ -483,7 +479,6 @@ class SyntheticDataGenerator:
         else:
             raise ValueError("selection_map['benign'] must be int or List[int]")
 
-        # Validate indices
         for idx in toxic_indices:
             if not 0 <= idx < len(self.toxic_words):
                 raise ValueError(f"Toxic word index {idx} out of range (0-{len(self.toxic_words)-1})")
@@ -496,50 +491,30 @@ class SyntheticDataGenerator:
         if isinstance(toxic_input, list):
             for template_idx in used_template_indices_toxic:
                 tmpl = self.template_pool[template_idx]
-                if self._rand.random() < variant_frac:
-                    tmpl = _simple_paraphrase(tmpl, seed=self.seed + template_idx)
-
                 for toxic_idx in toxic_indices:
                     toxic_word = self.toxic_words[toxic_idx]
                     raw_h = tmpl.format(toxic_word)
-                    if self._rand.random() < 0.2:
-                        raw_h = self._rand.choice(_compose_variants(raw_h))
                     harmful.append(raw_h)
         else:
-            for i, (toxic_idx, template_idx) in enumerate(zip(toxic_indices, used_template_indices_toxic)):
+            for toxic_idx, template_idx in zip(toxic_indices, used_template_indices_toxic):
                 tmpl = self.template_pool[template_idx]
-                if self._rand.random() < variant_frac:
-                    tmpl = _simple_paraphrase(tmpl, seed=self.seed + i)
-
                 toxic_word = self.toxic_words[toxic_idx]
                 raw_h = tmpl.format(toxic_word)
-                if self._rand.random() < 0.2:
-                    raw_h = self._rand.choice(_compose_variants(raw_h))
                 harmful.append(raw_h)
 
         safe: List[str] = []
         if isinstance(benign_input, list):
             for template_idx in used_template_indices_benign:
                 tmpl = self.template_pool[template_idx]
-                if self._rand.random() < variant_frac:
-                    tmpl = _simple_paraphrase(tmpl, seed=self.seed + template_idx)
-
                 for benign_idx in benign_indices:
                     benign_word = self.benign_words[benign_idx]
                     raw_s = tmpl.format(benign_word)
-                    if self._rand.random() < 0.2:
-                        raw_s = self._rand.choice(_compose_variants(raw_s))
                     safe.append(raw_s)
         else:
-            for i, (benign_idx, template_idx) in enumerate(zip(benign_indices, used_template_indices_benign)):
+            for benign_idx, template_idx in zip(benign_indices, used_template_indices_benign):
                 tmpl = self.template_pool[template_idx]
-                if self._rand.random() < variant_frac:
-                    tmpl = _simple_paraphrase(tmpl, seed=self.seed + i)
-
                 benign_word = self.benign_words[benign_idx]
                 raw_s = tmpl.format(benign_word)
-                if self._rand.random() < 0.2:
-                    raw_s = self._rand.choice(_compose_variants(raw_s))
                 safe.append(raw_s)
 
         harmful_dataset = SimpleTextDataset(harmful)
