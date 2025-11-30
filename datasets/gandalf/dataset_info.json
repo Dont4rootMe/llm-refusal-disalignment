@@ -1,0 +1,62 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "gandalf_ignore_instructions",
+  "dataset_size": 85906,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/Lakera/gandalf_ignore_instructions@04737b65e90a6794ec227012e4a255a7def6344b/data/train-00000-of-00001-ded53be747ff55cd.parquet": {
+      "num_bytes": 36715,
+      "checksum": null
+    },
+    "hf://datasets/Lakera/gandalf_ignore_instructions@04737b65e90a6794ec227012e4a255a7def6344b/data/validation-00000-of-00001-94481a2a09ff2fff.parquet": {
+      "num_bytes": 7464,
+      "checksum": null
+    },
+    "hf://datasets/Lakera/gandalf_ignore_instructions@04737b65e90a6794ec227012e4a255a7def6344b/data/test-00000-of-00001-bc92128b9288a6d1.parquet": {
+      "num_bytes": 7336,
+      "checksum": null
+    }
+  },
+  "download_size": 51515,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "similarity": {
+      "dtype": "float64",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 137421,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 66498,
+      "num_examples": 777,
+      "dataset_name": "gandalf_ignore_instructions"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 9647,
+      "num_examples": 111,
+      "dataset_name": "gandalf_ignore_instructions"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 9761,
+      "num_examples": 112,
+      "dataset_name": "gandalf_ignore_instructions"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "builder_name": "csv",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "atta_q",
+  "dataset_size": 773726,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/ibm-research/AttaQ@5346565948b1809de748d304b7b70198d71a16c9/AttaQ-v1.csv": {
+      "num_bytes": 772167,
+      "checksum": null
+    }
+  },
+  "download_size": 772167,
+  "features": {
+    "label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "input": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "additional_info": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 1545893,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 773726,
+      "num_examples": 1402,
+      "dataset_name": "atta_q"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

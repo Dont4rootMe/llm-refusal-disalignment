@@ -1,0 +1,48 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "prompt": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "adversarial": {
+      "dtype": "bool",
+      "_type": "Value"
+    },
+    "response": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt_harm_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response_refusal_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response_harm_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "subcategory": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response_refusal_agreement": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "prompt_harm_agreement": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "response_harm_agreement": {
+      "dtype": "float64",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
