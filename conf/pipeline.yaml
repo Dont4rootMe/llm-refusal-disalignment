@@ -1,0 +1,103 @@
+# Hydra config covering all pipeline options and valid values.
+#
+# How to run:
+#   python -m pipeline --config-dir conf --config-name pipeline
+#
+# Notes on allowed values:
+# - Booleans are true/false.
+# - Set fields to null to keep defaults from the code.
+# - Lists accept python-style lists (e.g., [0,1,2]); ints are treated as counts/samples.
+
+model_id: Qwen/Qwen3-VL-2B-Instruct
+output_dir: outputs/pipeline
+seed: 42
+
+data:
+  # 0 <= validation_ratio < 1; fraction routed to validation/metrics.
+  validation_ratio: 0.25
+  batch_size: 8
+  max_train_items: null    # null keeps all; int trims both classes for training
+  max_eval_items: null     # null keeps all; int trims both classes for validation
+  shuffle_seed: 42
+
+  synthetic:
+    enabled: true
+    mode: pairs            # pairs | selection_map
+    n_pairs: 200           # used when mode == pairs
+    variant_frac: 0.3      # 0..1, fraction of templates paraphrased
+    # For selection_map: each value is int (random sample count) or explicit list of indices.
+    selection_map:
+      templates: all       # list of template indices or int; 'all' keeps every template
+      toxic: 20            # list of toxic word indices (0-49) or int sample count
+      benign: 20           # list of benign word indices (0-49) or int sample count
+    backtranslation_passes: 0   # >=0; 0 disables
+    paraphrase_variants: 1      # >=1; 1 disables expansion
+    seed: 123
+
+  real:
+    enabled: false
+    data_dir: ./datasets
+    default_count: 20           # per dataset when selection_counts omitted/zero
+    selection_counts:           # counts <=0 skip a dataset
+      attaq: 0
+      gandalf: 0
+      wildguard: 0              # applied per class (harmful/safe)
+
+  manual:
+    enabled: false
+    harmful_path: null          # path to text/json/jsonl with one prompt per entry/line
+    safe_path: null
+    max_items: null
+
+generation:
+  max_new_tokens: 128
+  temperature: 0.0
+  do_sample: false
+
+metrics:
+  ppl_model_id: null            # null -> reuse model_id
+  ppl_device: cpu               # cpu | cuda[:idx]
+  classifier_model_id: Qwen/Qwen3-VL-2B-Instruct
+  classifier_device: cpu        # cpu | cuda[:idx]
+  classifier_batch_size: 4
+  classifier_max_new_tokens: 32
+  classifier_temperature: 0.0
+
+method:
+  name: som_md_ablation         # som_md_ablation | refusal_reduction
+
+  som_md_ablation:
+    target_layer: null
+    max_seq_len: 1024
+    device: cpu                 # cpu | cuda[:idx]
+    max_harmful_batches: null
+    max_safe_batches: null
+    max_harmful_items: 4000
+    max_safe_items: 6000
+    som_rows: 4
+    som_cols: 4
+    som_steps: 5000
+    som_lr0: 0.1
+    som_sigma0: 0.8
+    som_seed: 42
+    k_directions: 3
+    normalize_directions: true
+    bo_trials: 24               # 0 disables selection search
+    bo_eval_harmful: 24
+    bo_temperature: 0.0
+    bo_max_new_tokens: 96
+    bo_classifier_model: null
+    ablation_strength: 1.0
+    default_gen_kwargs: {}      # auto-populated by pipeline
+    model_kwargs: {}
+
+  refusal_reduction:
+    target_layers: null         # list of layer names or null for defaults
+    intervention_strength: 1.0
+    batch_size: 4
+    max_sequence_length: 1024
+    activation_device: cpu      # cpu | cuda[:idx]
+    k_pca: 1
+    max_samples_per_class: 200  # null keeps all available
+    max_hooks: 6
+    classifier_default_for_unknown: refusal
